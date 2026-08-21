@@ -93,10 +93,12 @@ Done already:
   - Requires the **Docker Pipeline** Jenkins plugin (Manage Jenkins → Plugins)
     for the `agent { docker { ... } }` syntax.
 
-Still required from you:
+- ✅ Jenkins job pointed at `https://github.com/cloudstackops-dev/demo-app.git`
+  (branch `main`, script path `Jenkinsfile`), with a GitHub webhook configured
+  for automatic build triggering on push.
 
-1. **Point a Jenkins pipeline job at this repo** (Jenkinsfile is already at
-   the repo root) and trigger the first build.
+Still required from you: none — this commit is a test push to confirm the
+webhook triggers a build automatically.
 
 After these steps, every subsequent Jenkins run builds a new image tagged
 with the short git commit SHA, pushes it to DOCR, and updates the Deployment
