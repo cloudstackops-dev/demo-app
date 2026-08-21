@@ -20,6 +20,13 @@ pipeline {
         }
 
         stage('Install/Test') {
+            agent {
+                docker {
+                    image 'node:20-alpine'
+                    args '-u root'
+                    reuseNode true
+                }
+            }
             steps {
                 dir('app') {
                     sh 'npm install'
@@ -36,9 +43,9 @@ pipeline {
 
         stage('Push to DOCR') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docr-credentials', usernameVariable: 'DOCR_USER', passwordVariable: 'DOCR_TOKEN')]) {
+                withCredentials([string(credentialsId: 'doctl-token-j', variable: 'DOCR_TOKEN')]) {
                     sh '''
-                        echo "$DOCR_TOKEN" | docker login registry.digitalocean.com -u "$DOCR_USER" --password-stdin
+                        echo "$DOCR_TOKEN" | docker login registry.digitalocean.com -u "$DOCR_TOKEN" --password-stdin
                         docker push ${REGISTRY}/${IMAGE_NAME}:${GIT_SHA_SHORT}
                     '''
                 }
@@ -46,8 +53,15 @@ pipeline {
         }
 
         stage('Deploy') {
+            agent {
+                docker {
+                    image 'bitnami/kubectl:latest'
+                    args '-u root --entrypoint='
+                    reuseNode true
+                }
+            }
             steps {
-                withCredentials([file(credentialsId: 'doks-kubeconfig', variable: 'KUBECONFIG')]) {
+                withCredentials([file(credentialsId: 'access-k8s', variable: 'KUBECONFIG')]) {
                     sh '''
                         kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${REGISTRY}/${IMAGE_NAME}:${GIT_SHA_SHORT} -n ${NAMESPACE}
                         kubectl rollout status deployment/${DEPLOYMENT} -n ${NAMESPACE} --timeout=90s

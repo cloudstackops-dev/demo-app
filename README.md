@@ -73,16 +73,29 @@ Done already:
 - ✅ Deployment, Service, and Ingress applied to `demo`; verified live —
   `curl http://demo.209.38.114.36.nip.io/` and `/health` both return 200.
 
+Done already:
+- ✅ Jenkins credentials created:
+  - `doctl-token-j` — Secret text credential holding the DOCR API token, used
+    for `docker login`.
+  - `access-k8s` — Secret file credential holding the kubeconfig for
+    `do-fra1-supra-prod-cluster`, used for `kubectl` access during Deploy.
+- ✅ `Jenkinsfile` updated to reference these credential IDs. Jenkins agents
+  here are dynamically-provisioned DigitalOcean Droplets (real VMs with
+  Docker Engine installed natively — confirmed via an existing working
+  pipeline in this org that runs `docker build`/`push` directly), but without
+  Node/npm or kubectl preinstalled. So:
+  - **Install/Test** runs inside a `node:20-alpine` container (Docker
+    Pipeline plugin, `agent { docker { ... } }`, `reuseNode: true`).
+  - **Build Docker image** / **Push to DOCR** run directly on the droplet
+    (Docker Engine is native there, no dockerization needed).
+  - **Deploy** runs inside a `bitnami/kubectl` container the same way as
+    Install/Test, since kubectl isn't assumed to be preinstalled.
+  - Requires the **Docker Pipeline** Jenkins plugin (Manage Jenkins → Plugins)
+    for the `agent { docker { ... } }` syntax.
+
 Still required from you:
 
-1. **Add two Jenkins credentials** (IDs must match the `Jenkinsfile` exactly):
-   - `docr-credentials` — Username/Password credential. Use your DOCR API
-     token as *both* the username and password value — for `docker login`.
-   - `doks-kubeconfig` — Secret file credential containing the kubeconfig for
-     `do-fra1-supra-prod-cluster` (`doctl kubernetes cluster kubeconfig save <cluster-id>`
-     then upload the resulting file) — for `kubectl` access during Deploy.
-
-2. **Point a Jenkins pipeline job at this repo** (Jenkinsfile is already at
+1. **Point a Jenkins pipeline job at this repo** (Jenkinsfile is already at
    the repo root) and trigger the first build.
 
 After these steps, every subsequent Jenkins run builds a new image tagged
