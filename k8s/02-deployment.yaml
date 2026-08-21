@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+  namespace: demo
+  labels:
+    app: demo-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo-app
+  template:
+    metadata:
+      labels:
+        app: demo-app
+    spec:
+      imagePullSecrets:
+        - name: docr-registry-secret
+      containers:
+        - name: demo-app
+          # The Jenkins pipeline overwrites this tag via `kubectl set image` on deploy.
+          image: registry.digitalocean.com/demo-registry-cnl/demo-app:REPLACE_ME
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 15
