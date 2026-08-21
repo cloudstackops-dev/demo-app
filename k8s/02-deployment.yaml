@@ -20,7 +20,7 @@ spec:
       containers:
         - name: demo-app
           # The Jenkins pipeline overwrites this tag via `kubectl set image` on deploy.
-          image: registry.digitalocean.com/demo-registry-cnl/demo-app:REPLACE_ME
+          image: registry.digitalocean.com/demo-registry-cnl/demo-app:4d09d9b
           ports:
             - containerPort: 3000
           resources:
