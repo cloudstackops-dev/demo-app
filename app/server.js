@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
   <span class="badge">status: ok</span>
   <h1>Demo CI/CD Project</h1>
   <p>
-    This page is served by a Node.js (Express) app running in the
+    This pagee is served by a Node.js (Express) app running in the
     <strong>demo</strong> namespace on DigitalOcean Kubernetes, deployed via
     a Jenkins pipeline that builds a Docker image, tags it with the git
     commit SHA, pushes it to DigitalOcean Container Registry, and rolls it
