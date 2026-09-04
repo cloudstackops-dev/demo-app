@@ -1,5 +1,5 @@
 # Demo CI/CD Project
-commit2
+commit4 from ft/git-sqash-merge
 
 A minimal Node.js (Express) app with a Jenkins pipeline that builds, tags,
 pushes to DigitalOcean Container Registry (DOCR), and deploys to a single
