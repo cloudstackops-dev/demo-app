@@ -1,5 +1,5 @@
 # Demo CI/CD Project
-rebase another commit
+rebase
 
 A minimal Node.js (Express) app with a Jenkins pipeline that builds, tags,
 pushes to DigitalOcean Container Registry (DOCR), and deploys to a single
